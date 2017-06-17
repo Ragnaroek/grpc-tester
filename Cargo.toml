@@ -1,0 +1,13 @@
+[package]
+name = "grpc-tester"
+version = "0.0.1"
+authors = [ "Michael Bohn <spaceodyssey@gmx.de>" ]
+description = "grpc testing helper"
+license = "GPL-3.0"
+repository = "https://github.com/Ragnaroek/grpc-tester"
+
+[dependencies]
+httpbis = "0.2.0"
+bytes = "0.4.4"
+tls-api-openssl = "0.*"
+futures         = "0.*"
