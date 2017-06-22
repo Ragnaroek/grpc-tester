@@ -3,13 +3,25 @@ extern crate httpbis;
 extern crate tls_api_openssl;
 extern crate futures;
 
-use bytes::Bytes;
-use httpbis::{Header, Headers, Client, HttpScheme};
+use bytes::{Bytes, BytesMut, BigEndian};
+use bytes::BufMut;
+use httpbis::{Header, Headers};
 use futures::future::Future;
+
+
+// TODO put code for grpc request to separate file
+// TODO set-up simple rust http2 server
+// TODO build prototype for ui
+// -- add .proto file + endpoint to a list view
+// -- announce proto-file and endpoint to grpc-test-server (stored there)
+// -- request form-data from server (parsed from proto-file input)
+// -- render form-data
+// -- send grpc request and show result + meta-data
+
 
 fn main() {
 
-    let mut headers = Headers(vec![
+    let headers = Headers(vec![
         Header::new(Bytes::from_static(b":method"), Bytes::from_static(b"POST")),
         Header::new(Bytes::from_static(b":path"), Bytes::from_static(b"/helloworld.Greeter/SayHello")),
         Header::new(Bytes::from_static(b":authority"), Bytes::from_static(b"localhost")),
@@ -21,11 +33,24 @@ fn main() {
 
     let client = httpbis::Client::new_plain("localhost", 50051, Default::default()).expect("Client");
 
-    let mut mem = Bytes::from(&b"Hello world"[..]);
-    let response = client.start_request_simple(headers, mem);
+    let test_string = "Rustsfsf";
+    let mut message = BytesMut::with_capacity(test_string.len()+1);
+    println!("tag {:?}", 1u8 << 3 | & 2);
+    message.put_u8(1u8 << 3 | & 2);
+    message.put(test_string.len() as u8); //TODO use num bytes of string!
+    message.put(test_string);
+
+    println!("message {:?}", message.to_vec());
+    let mut mem = BytesMut::with_capacity(5 + message.len());
+    mem.put_u8(0);
+    mem.put_u32::<BigEndian>(message.len() as u32);
+    mem.put(message);
+
+    println!("mem {:?}", mem.to_vec());
+
+    let response = client.start_request_simple(headers, mem.freeze());
 
     println!("Response {:?}", response.collect().wait().unwrap().dump());
 
-    //TODO start_request_simple with correct GRPC request bytes!
     //let resp = client.start_get("/helloworld.Greeter/SayHello", "localhost").collect().wait().expect("execute request");
 }
