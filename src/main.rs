@@ -21,13 +21,13 @@ fn main() {
                           .short("s")
                           .long("serveraddr")
                           .value_name("SERVER_ADDR")
-                          .help("http address to GRPC server")
+                          .help("http address to GRPC server (e.g. localhost:8080)")
                           .takes_value(true))
                     .arg(Arg::with_name("rpcmessage")
                           .required(true)
                           .short("m")
                           .long("rpcmessage")
-                          .help("name of the rpc message")
+                          .help("name of the rpc message (e.g. SayHello)")
                           .takes_value(true))
                     .get_matches();
 
