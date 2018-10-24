@@ -2,7 +2,7 @@ extern crate clap;
 
 mod grpc;
 
-use clap::{Arg, App};
+use clap::{Arg, App, SubCommand};
 
 fn main() {
 
@@ -16,21 +16,29 @@ fn main() {
                           .value_name("PROTO_FILE")
                           .help("proto file with service and message definition")
                           .takes_value(true))
-                    .arg(Arg::with_name("serveraddr")
-                          .required(true)
-                          .short("s")
-                          .long("serveraddr")
-                          .value_name("SERVER_ADDR")
-                          .help("http address to GRPC server (e.g. localhost:8080)")
-                          .takes_value(true))
-                    .arg(Arg::with_name("rpcmessage")
-                          .required(true)
-                          .short("m")
-                          .long("rpcmessage")
-                          .help("name of the rpc message (e.g. SayHello)")
-                          .takes_value(true))
-                    .get_matches();
+                    .subcommand(SubCommand::with_name("send")
+                        .about("sending grpc requests")
+                        .arg(Arg::with_name("MESSAGENAME")
+                            .help("GRPC message name")
+                            .required(true))
+                        .arg(Arg::with_name("ADDRESS")
+                            .help("server address")
+                            .default_value("localhost:8080")
+                            .short("a")
+                            .long("address")
+                            .value_name("ADDRESS")
+                            .takes_value(true))
+                )
+                .get_matches();
 
-    println!("matches {:?}", matches);
-    //grpc::send_dummy_request();
+    //TODO: Read proto file (always?)
+
+    if let Some(sub) = matches.subcommand_matches("send") {
+        println!("send subcommand invoked");
+        //grpct —proto /file.proto send <rpcmessagename> [—addr localhost:8080] << data from stdin
+        //TODO Read message data from stdin
+        //TODO create grpc request and send
+    } else {
+        println!("please select a subcommand")
+    }
 }
