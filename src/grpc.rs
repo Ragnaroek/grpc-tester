@@ -3,7 +3,7 @@ extern crate httpbis;
 extern crate tls_api_openssl;
 extern crate futures;
 
-use self::bytes::{Bytes, BytesMut, BigEndian};
+use self::bytes::{Bytes, BytesMut};
 use self::bytes::BufMut;
 use self::httpbis::{Header, Headers};
 use self::futures::future::Future;
@@ -32,7 +32,7 @@ pub fn send_dummy_request() {
     println!("message {:?}", message.to_vec());
     let mut mem = BytesMut::with_capacity(5 + message.len());
     mem.put_u8(0);
-    mem.put_u32::<BigEndian>(message.len() as u32);
+    mem.put_u32_be(message.len() as u32);
     mem.put(message);
 
     println!("mem {:?}", mem.to_vec());

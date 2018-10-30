@@ -36,12 +36,10 @@ fn main() {
                 )
                 .get_matches();
 
-    //TODO: Read proto file (always?)
-
     let proto_file = matches.value_of("proto").unwrap();
     let proto = parser::parse_from_file(Path::new(proto_file)).unwrap();
 
-    if let Some(sub) = matches.subcommand_matches("send") {
+    if matches.is_present("send") {
         println!("send subcommand invoked");
         //grpct —proto /file.proto send <rpcmessagename> [—addr localhost:8080] << data from stdin
         //TODO Read message data from stdin
