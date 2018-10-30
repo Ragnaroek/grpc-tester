@@ -1,8 +1,13 @@
 extern crate clap;
+extern crate protoparse;
 
 mod grpc;
 
+use std::path::Path;
+
 use clap::{Arg, App, SubCommand};
+
+use protoparse::parser;
 
 fn main() {
 
@@ -32,6 +37,9 @@ fn main() {
                 .get_matches();
 
     //TODO: Read proto file (always?)
+
+    let proto_file = matches.value_of("proto").unwrap();
+    let proto = parser::parse_from_file(Path::new(proto_file)).unwrap();
 
     if let Some(sub) = matches.subcommand_matches("send") {
         println!("send subcommand invoked");
